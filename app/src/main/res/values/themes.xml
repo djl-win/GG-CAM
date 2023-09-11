@@ -1,0 +1,32 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.COMP5216A2" parent="Theme.Material3.DayNight.NoActionBar">
+
+    </style>
+
+    <style name="Theme.COMP5216A2" parent="Base.Theme.COMP5216A2" />
+
+    <style name="Theme.Splash.Screen" parent="Base.Theme.COMP5216A2">
+        <item name="android:navigationBarColor">@color/black</item><!-- Set the bottom navigation bar to white -->
+        <item name="android:statusBarColor">@color/black</item> <!-- Set the status bar icon to white -->
+        <item name="android:windowLightStatusBar">true</item> <!-- Set to true to make status bar ICONS and text dark -->
+        <item name="android:windowBackground">@android:color/transparent</item> <!-- Set the window's background to be transparent -->
+        <item name="android:windowNoTitle">true</item> <!-- Ensure the window has no title, making it more suitable for splash screens or similar full-screen activities -->
+        <item name="android:windowIsTranslucent">true</item><!-- Make the window translucent, which allows it to sit on top of other UI elements or the previous activity -->
+    </style>
+
+    <style name="Theme.Home.Activity" parent="Base.Theme.COMP5216A2">
+        <item name="android:statusBarColor">@android:color/transparent</item> <!-- Make the status bar transparent -->
+        <item name="android:navigationBarColor">@android:color/transparent</item><!-- Make the navigation bar transparent -->
+        <item name="android:windowLightStatusBar">true</item> <!-- Set to true to make status bar ICONS and text dark -->
+        <item name="android:windowBackground">@drawable/background_homepage</item><!-- Set the background drawable -->
+    </style>
+
+    <style name="Theme.Images.Activity" parent="Base.Theme.COMP5216A2">
+        <item name="android:statusBarColor">@android:color/transparent</item> <!-- Make the status bar transparent -->
+        <item name="android:navigationBarColor">@android:color/transparent</item><!-- Make the navigation bar transparent -->
+        <item name="android:windowLightStatusBar">true</item> <!-- Set to true to make status bar ICONS and text dark -->
+        <item name="android:windowBackground">@color/white</item><!-- Set the background drawable -->
+    </style>
+
+</resources>

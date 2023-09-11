@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HomeActivity">
+
+
+    <Switch
+        android:id="@+id/home_activity_switch_direction_camera"
+        android:layout_centerHorizontal="true"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        android:textOff="@string/front_camera"
+        android:textOn="@string/back_camera"
+        android:checked="false"
+        android:layout_marginTop="80dp"
+        android:clickable="false"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/home_activity_material_card_view_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        app:strokeWidth="0dp"
+        app:cardElevation="60dp"
+        app:cardCornerRadius="50dp"
+        android:layout_marginTop="180dp"
+        android:clickable="false"
+        android:focusable="false">
+
+        <FrameLayout
+            android:id="@+id/home_activity_frameLayout_camera"
+            android:layout_width="240dp"
+            android:layout_height="340dp"
+            android:background="@drawable/background_camera_border"
+            android:clickable="false"
+            android:focusable="false">
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="180dp"
+                android:layout_height="280dp"
+                android:layout_gravity="center"
+                app:strokeWidth="0dp"
+                app:cardElevation="60dp"
+                app:cardCornerRadius="30dp">
+                <!-- Camera preview using TextureView -->
+                <androidx.camera.view.PreviewView
+                    android:id="@+id/home_activity_preview_view_content_camera"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/home_activity_material_card_view_cover_camera"
+                android:layout_width="185dp"
+                android:layout_height="285dp"
+                android:layout_gravity="center"
+                app:strokeWidth="0dp"
+                app:cardElevation="60dp"
+                app:cardCornerRadius="30dp">
+                <!-- Camera preview using TextureView -->
+                <ImageView
+                    android:id="@+id/home_activity_preview_view_cover_camera"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/background_camera_cover" />
+            </com.google.android.material.card.MaterialCardView>
+
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:id="@+id/home_activity_linearLayout_setting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:layout_below="@+id/home_activity_material_card_view_camera">
+
+        <ImageButton
+            android:id="@+id/home_activity_image_button_power"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_power_open"
+            android:contentDescription="@string/app_name" />
+
+        <Switch
+            android:id="@+id/home_activity_switch_mode_camera"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:scaleX="1.2"
+            android:scaleY="1.2"
+            android:checked="false"
+            android:clickable="false"
+            android:layout_marginStart="15dp"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+    </LinearLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/home_activity_material_card_view_button_record"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="50dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        android:layout_centerHorizontal="true"
+        app:strokeWidth="3dp"
+        app:strokeColor="#80000000"
+        app:cardElevation="0dp"
+        android:clickable="false"
+        app:cardCornerRadius="50dp"
+        android:layout_below="@+id/home_activity_linearLayout_setting">
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <!-- 进度指示器 -->
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/home_activity_linear_progress_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:indicatorColor="@color/red" />
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/home_activity_material_card_view_button_video"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="50dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        android:layout_centerHorizontal="true"
+        app:strokeWidth="3dp"
+        app:strokeColor="#80000000"
+        app:cardElevation="0dp"
+        android:clickable="false"
+        app:cardCornerRadius="50dp"
+        android:layout_below="@+id/home_activity_linearLayout_setting"
+        android:visibility="gone">
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/home_activity_material_card_view_normal_video"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            app:cardBackgroundColor="@color/red"
+            android:clickable="false"
+            app:cardCornerRadius="50dp"
+            android:layout_gravity="center"
+            android:visibility="visible" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/home_activity_material_card_view_recording_video"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:cardBackgroundColor="@color/red"
+            android:clickable="false"
+            app:cardCornerRadius="50dp"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <ImageButton
+        android:id="@+id/home_activity_image_button_images"
+        android:layout_marginTop="200dp"
+        android:layout_marginStart="75dp"
+        android:layout_below="@+id/home_activity_linearLayout_setting"
+        android:layout_toEndOf="@+id/home_activity_linearLayout_setting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_images"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        />
+
+
+
+</RelativeLayout>

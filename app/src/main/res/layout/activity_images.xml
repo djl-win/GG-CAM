@@ -1,0 +1,22 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/images_activity_recycle_view_list"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="60dp"
+        android:clipToPadding="false" />
+
+    <ImageButton
+        android:id="@+id/images_activity_image_button_camera"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_camera"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/app_name" />
+</FrameLayout>

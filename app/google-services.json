@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1030841006404",
+    "project_id": "gg-cam",
+    "storage_bucket": "gg-cam.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1030841006404:android:b5ac4b77fb43e83a4e7f11",
+        "android_client_info": {
+          "package_name": "com.jiale.gg_cam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3htQZ-E-2gVeJJl1eP6wzebo4SOyMLLQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">GG CAM</string>
+    <string name="front_camera">Front Camera</string>
+    <string name="back_camera">Back Camera</string>
+</resources>
