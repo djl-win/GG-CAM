@@ -472,7 +472,7 @@ public class HomeActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Photo error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }else {
-                Toast.makeText(getApplicationContext(), "Can not get the location!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "You should open you google map to get the location firstly", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -579,7 +579,7 @@ public class HomeActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Video error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }else {
-                Toast.makeText(getApplicationContext(), "Can not get the location!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "You should open you google map to get the location firstly", Toast.LENGTH_LONG).show();
             }
         });
 

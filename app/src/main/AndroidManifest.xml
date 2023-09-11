@@ -42,7 +42,8 @@
         <!-- images activity -->
         <activity
             android:name=".ImagesActivity"
-            android:theme="@style/Theme.Images.Activity"/>
+            android:theme="@style/Theme.Images.Activity"
+            />
     </application>
 
 </manifest>

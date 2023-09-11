@@ -5,15 +5,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.jiale.gg_cam.R;
-import com.jiale.gg_cam.entities.MediaItem;
+import com.jiale.gg_cam.entities.CamItem;
 
 import java.util.List;
 
@@ -29,10 +29,16 @@ import java.util.List;
  */
 public class ImagesListAdapter extends RecyclerView.Adapter<ImagesListAdapter.ImageListViewHolder> {
 
-    Context context;
-    List<MediaItem> images;
+    // 回调接口，获取单机事件的回调
+    public interface ItemClickListener {
+        void onItemClick(CamItem camItem);
+    }
 
-    public ImagesListAdapter(Context context, List<MediaItem> images) {
+    private ItemClickListener itemClickListener;
+    Context context;
+    List<CamItem> images;
+
+    public ImagesListAdapter(Context context, List<CamItem> images) {
         this.context = context;
         this.images = images;
     }
@@ -54,9 +60,16 @@ public class ImagesListAdapter extends RecyclerView.Adapter<ImagesListAdapter.Im
                 .centerCrop()
                 .error(R.drawable.ic_logo)
                 .into(holder.imageViewPic);
-        if(images.get(position).getType() == MediaItem.MediaType.VIDEO){
+        if(images.get(position).getType() == CamItem.MediaType.VIDEO){
             holder.imageViewPlay.setVisibility(View.VISIBLE);
         }
+        // bind onclick call back
+        holder.frameLayoutMain.setOnClickListener(view -> {
+            // use call back to images activity
+            if (itemClickListener != null) {
+                itemClickListener.onItemClick(images.get(position));
+            }
+        });
     }
 
 
@@ -65,17 +78,28 @@ public class ImagesListAdapter extends RecyclerView.Adapter<ImagesListAdapter.Im
         return images.size();
     }
 
+    /**
+     * set on click listener for images list item
+     *
+     * @param itemClickListener content of father container
+     */
+    public void setItemClickListener(ItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+    }
+
 
 
     static class ImageListViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView imageViewPic;
         private ImageView imageViewPlay;
+        private FrameLayout frameLayoutMain;
 
         public ImageListViewHolder(@NonNull View itemView) {
             super(itemView);
             imageViewPic = itemView.findViewById(R.id.images_list_item_image_view_pic);
             imageViewPlay = itemView.findViewById(R.id.images_list_item_image_view_play);
+            frameLayoutMain = itemView.findViewById(R.id.images_list_item_frame_layout_main);
         }
 
     }

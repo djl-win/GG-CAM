@@ -1,30 +1,40 @@
 package com.jiale.gg_cam;
 
-import android.Manifest;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.jiale.gg_cam.adapters.ImagesListAdapter;
-import com.jiale.gg_cam.entities.MediaItem;
+import com.jiale.gg_cam.entities.CamItem;
+
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 
 import java.util.ArrayList;
-import java.util.List;
 
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * Images Activity
+ * <p>
+ * Images Activity logic
+ * </p>
+ *
+ * @author Jiale Dong
+ * @version 1.0
+ * @since 2023-09-11
+ */
 public class ImagesActivity extends AppCompatActivity {
 
     // image button to change to camera page
@@ -34,6 +44,11 @@ public class ImagesActivity extends AppCompatActivity {
     private RecyclerView recyclerViewList;
     // 声明权限请求码，你可以自定义
     private static final int REQUEST_READ_EXTERNAL_STORAGE = 10111;
+
+    // time format
+    @SuppressLint("SimpleDateFormat")
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +76,21 @@ public class ImagesActivity extends AppCompatActivity {
         // Listener for imageButtonCamera
         imageButtonCameraListener();
 
+        // init recycle view and set listener
         recyclerViewList.setLayoutManager(new GridLayoutManager(this, 2)); // 2列
-
         ImagesListAdapter adapter = new ImagesListAdapter(this, getAllMediaFromGGCamFolders());
         recyclerViewList.setAdapter(adapter);
+        adapter.setItemClickListener(new ImagesListAdapter.ItemClickListener(){
+            @Override
+            public void onItemClick(CamItem camItem) {
+                // LOAD image fragment
+                // Image fragment
+                ImageFragment imageFragment = new ImageFragment();
+                imageFragment.setMediaItem(camItem);
+                imageFragment.show(getSupportFragmentManager(),"ImageFragment");
+            }
+        });
+
     }
 
     /**
@@ -79,18 +105,44 @@ public class ImagesActivity extends AppCompatActivity {
     /**
      * Retrieves all media items from specific GG-CAM folders.
      */
-    private List<MediaItem> getAllMediaFromGGCamFolders() {
+    private List<CamItem> getAllMediaFromGGCamFolders() {
+        // Sort the mediaItems list by date in descending order (most recent first)
+        // Return the list containing all the media items
+        return getAndSortImagesByTimeDesc();
+    }
+
+    /**
+     * Sort the mediaItems list by date in descending order (most recent first)
+     * @return  mediaItems: images and videos
+     */
+    private List<CamItem> getAndSortImagesByTimeDesc() {
         // Create an empty list to store the media items
-        List<MediaItem> mediaItems = new ArrayList<>();
+        List<CamItem> camItems = new ArrayList<>();
 
         // Add all image media items from the "Pictures/GG-CAM/" folder to the list
-        mediaItems.addAll(getAllMediaItemsFromFolder(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, MediaItem.MediaType.IMAGE));
+        camItems.addAll(getAllMediaItemsFromFolder(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, CamItem.MediaType.IMAGE));
 
         // Add all video media items from the "Movies/GG-CAM/" folder to the list
-        mediaItems.addAll(getAllMediaItemsFromFolder(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, MediaItem.MediaType.VIDEO));
+        camItems.addAll(getAllMediaItemsFromFolder(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, CamItem.MediaType.VIDEO));
 
-        // Return the list containing all the media items
-        return mediaItems;
+        // sort desc time
+        Collections.sort(camItems, new Comparator<CamItem>() {
+            @Override
+            public int compare(CamItem item1, CamItem item2) {
+                try {
+
+                    long timestamp1 = Objects.requireNonNull(sdf.parse(item1.getTime())).getTime();
+                    long timestamp2 = Objects.requireNonNull(sdf.parse(item2.getTime())).getTime();
+
+                    return Long.compare(timestamp2, timestamp1);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to parse date string: " + e.getMessage());
+                }
+            }
+        });
+
+
+        return camItems;
     }
 
 
@@ -101,10 +153,10 @@ public class ImagesActivity extends AppCompatActivity {
      * @param mediaType the type of media (image or video)
      * @return List of MediaItem objects
      */
-    private List<MediaItem> getAllMediaItemsFromFolder(Uri uri, MediaItem.MediaType mediaType) {
+    private List<CamItem> getAllMediaItemsFromFolder(Uri uri, CamItem.MediaType mediaType) {
 
         // Create an empty list to store the media items
-        List<MediaItem> mediaItems = new ArrayList<>();
+        List<CamItem> camItems = new ArrayList<>();
 
         // Define the columns to be retrieved from the media store
         String[] projection = {
@@ -117,18 +169,18 @@ public class ImagesActivity extends AppCompatActivity {
         // Determine the MIME type and RELATIVE PATH based on the provided mediaType enum
         String mimeType;
         String relativePath;
-        if (mediaType == MediaItem.MediaType.IMAGE) {
+        if (mediaType == CamItem.MediaType.IMAGE) {
             // MIME type for JPEG images
             mimeType = "image/jpeg";
             // RELATIVE PATH for JPEG images
             relativePath = "Pictures/GG-CAM/";
-        } else if (mediaType == MediaItem.MediaType.VIDEO) {
+        } else if (mediaType == CamItem.MediaType.VIDEO) {
             // MIME type for MP4 videos
             mimeType = "video/mp4";
             // RELATIVE PATH for MP4 videos
             relativePath = "Movies/GG-CAM/";
         } else {
-            return mediaItems;  // If unknown mediaType, return an empty list
+            return camItems;  // If unknown mediaType, return an empty list
         }
 
         // Construct the selection criteria for the media store query
@@ -168,12 +220,12 @@ public class ImagesActivity extends AppCompatActivity {
 //                Log.d("GG_DEBUG", "location:" +infoFromFileName[1]);
 //                Log.d("GG_DEBUG", "time:" +infoFromFileName[2]);
                 // Add the media item to the list
-                mediaItems.add(new MediaItem(contentUri, mediaType,infoFromFileName[0],infoFromFileName[1],infoFromFileName[2]));
+                camItems.add(new CamItem(contentUri, mediaType,infoFromFileName[0],infoFromFileName[1],infoFromFileName[2]));
             }
         }
 
         // Return the list of media items
-        return mediaItems;
+        return camItems;
     }
 
 

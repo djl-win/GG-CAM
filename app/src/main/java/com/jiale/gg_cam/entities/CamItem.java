@@ -12,7 +12,7 @@ import android.net.Uri;
  * @version 1.0
  * @since 2023-09-11
  */
-public class MediaItem {
+public class CamItem {
     private Uri uri;
     private MediaType type;
     private String city;
@@ -27,7 +27,7 @@ public class MediaItem {
         this.city = city;
     }
 
-    public MediaItem(Uri uri, MediaType type, String city, String location, String time) {
+    public CamItem(Uri uri, MediaType type, String city, String location, String time) {
         this.uri = uri;
         this.type = type;
         this.city = city;

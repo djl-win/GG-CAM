@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/image_fragment_relative_layout_main"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ImageFragment">
+
+    <ImageButton
+        android:id="@+id/image_fragment_image_button_back"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="15dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/icon_back"
+        android:background="?android:attr/selectableItemBackground"
+        android:contentDescription="@string/app_name" />
+
+    <FrameLayout
+        android:id="@+id/image_fragment_frame_layout_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="130dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="310dp"
+            android:layout_height="450dp"
+            app:cardCornerRadius="15dp"
+            app:cardBackgroundColor="#E8E8E8"
+            app:strokeWidth="0dp"
+            app:cardElevation="4dp"/>
+
+        <ImageView
+            android:id="@+id/image_fragment_image_view_pic"
+            android:layout_marginTop="35dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="260dp"
+            android:layout_height="360dp"
+            android:elevation="8dp"
+            android:src="@drawable/ic_logo"
+            android:contentDescription="@string/app_name"
+            android:visibility="gone"/>
+
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:background="@android:color/white"
+            android:id="@+id/image_fragment_video_view_pic"
+            app:resize_mode="zoom"
+            android:layout_marginTop="35dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="260dp"
+            android:layout_height="360dp"
+            android:elevation="10dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+           />
+
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/image_fragment_text_view_time"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="15dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/image_fragment_frame_layout_main"
+        android:text="@string/app_name"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/image_fragment_text_view_city"
+        android:layout_below="@+id/image_fragment_text_view_time"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/image_fragment_text_view_location"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="15dp"
+        android:layout_below="@+id/image_fragment_text_view_city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textSize="16sp" />
+
+
+</RelativeLayout>
