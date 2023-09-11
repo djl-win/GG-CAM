@@ -47,11 +47,16 @@ public class ImagesListAdapter extends RecyclerView.Adapter<ImagesListAdapter.Im
     @Override
     public void onBindViewHolder(@NonNull ImageListViewHolder holder, int position) {
         Log.d("GlideDebug", "Loading URI: " + images.get(position).getUri());
+        holder.imageViewPlay.setVisibility(View.GONE);
         // 加载用户头像到xml
         Glide.with(context)
                 .load(images.get(position).getUri())
+                .centerCrop()
                 .error(R.drawable.ic_logo)
                 .into(holder.imageViewPic);
+        if(images.get(position).getType() == MediaItem.MediaType.VIDEO){
+            holder.imageViewPlay.setVisibility(View.VISIBLE);
+        }
     }
 
 
@@ -65,10 +70,12 @@ public class ImagesListAdapter extends RecyclerView.Adapter<ImagesListAdapter.Im
     static class ImageListViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView imageViewPic;
+        private ImageView imageViewPlay;
 
         public ImageListViewHolder(@NonNull View itemView) {
             super(itemView);
             imageViewPic = itemView.findViewById(R.id.images_list_item_image_view_pic);
+            imageViewPlay = itemView.findViewById(R.id.images_list_item_image_view_play);
         }
 
     }

@@ -187,6 +187,8 @@ public class HomeActivity extends AppCompatActivity {
         customButtonListener();
         // Listener for images page(activity)
         imageButtonImagesListener();
+        // callback of request the latest location
+
     }
 
     /**
@@ -425,6 +427,9 @@ public class HomeActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         // get the location and store the image
         fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
@@ -466,6 +471,8 @@ public class HomeActivity extends AppCompatActivity {
                     // 保存失败
                     Toast.makeText(getApplicationContext(), "Photo error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
+            }else {
+                Toast.makeText(getApplicationContext(), "Can not get the location!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -500,6 +507,9 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         // get the location and store the image
@@ -568,6 +578,8 @@ public class HomeActivity extends AppCompatActivity {
                     // 保存失败
                     Toast.makeText(getApplicationContext(), "Video error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
+            }else {
+                Toast.makeText(getApplicationContext(), "Can not get the location!", Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -28,7 +28,8 @@ public class ScreenSplash extends AppCompatActivity {
     private static final String[] REQUIRED_PERMISSIONS = {
             Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
     };
     private static final int REQUEST_CODE_PERMISSIONS = 100;
 
