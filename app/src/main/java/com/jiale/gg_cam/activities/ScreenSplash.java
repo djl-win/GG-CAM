@@ -1,4 +1,4 @@
-package com.jiale.gg_cam;
+package com.jiale.gg_cam.activities;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -13,6 +13,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.provider.Settings;
+
+import com.jiale.gg_cam.R;
+import com.jiale.gg_cam.services.PhoneStatusService;
 
 /**
  * ScreenSplash Activity
@@ -36,6 +39,9 @@ public class ScreenSplash extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // register broadcast
+        startService(new Intent(this, PhoneStatusService.class));
         setContentView(R.layout.splash_screen);
 
         // Show splash for 2 seconds then request permissions

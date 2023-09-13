@@ -24,7 +24,7 @@
 
         <!-- screen splash activity -->
         <activity
-            android:name=".ScreenSplash"
+            android:name=".activities.ScreenSplash"
             android:exported="true"
             android:theme="@style/Theme.Splash.Screen">
             <intent-filter>
@@ -36,14 +36,18 @@
 
         <!-- home activity -->
         <activity
-            android:name=".HomeActivity"
+            android:name=".activities.HomeActivity"
             android:theme="@style/Theme.Home.Activity" />
 
         <!-- images activity -->
         <activity
-            android:name=".ImagesActivity"
+            android:name=".activities.ImagesActivity"
             android:theme="@style/Theme.Images.Activity"
             />
+
+        <service android:name=".services.PhoneStatusService" />
+
+
     </application>
 
 </manifest>

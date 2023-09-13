@@ -1,4 +1,4 @@
-package com.jiale.gg_cam;
+package com.jiale.gg_cam.activities;
 
 import android.Manifest;
 
@@ -28,14 +28,25 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+
+import com.google.android.gms.location.Granularity;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.location.SettingsClient;
+import com.jiale.gg_cam.R;
 import com.jiale.gg_cam.listeners.CustomButtonListener;
 import com.jiale.gg_cam.utils.CustomAnimationUtil;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -133,6 +144,12 @@ public class HomeActivity extends AppCompatActivity {
     // image button
     private ImageButton imageButtonImages;
 
+    // currentLocation
+    private Location currentLocation;
+
+    // Location callback
+    LocationCallback locationCallback;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,6 +205,60 @@ public class HomeActivity extends AppCompatActivity {
         // Listener for images page(activity)
         imageButtonImagesListener();
         // callback of request the latest location
+        locationUpdate();
+
+    }
+
+    /**
+     * callback of request the latest location
+     */
+    private void locationUpdate() {
+        if (ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+
+        // first time get location
+        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+            if (location != null) {
+                currentLocation = location;
+            } else {
+                Toast.makeText(getApplicationContext(), "Can not get the location!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // monitor the location update
+       locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                currentLocation = locationResult.getLastLocation();
+            }
+        };
+
+        LocationRequest locationRequest = new LocationRequest.Builder(5000)
+                .setGranularity(Granularity.GRANULARITY_FINE)
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                .build();
+
+        LocationSettingsRequest locationSettingsRequest = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest)
+                .build();
+
+        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
+        settingsClient.checkLocationSettings(locationSettingsRequest).addOnCompleteListener(
+                task -> {
+                    if (task.isSuccessful()) {
+                        fusedLocationClient.requestLocationUpdates(locationRequest,
+                                locationCallback,
+                                Looper.getMainLooper());
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Can not get the location!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
 
     }
 
@@ -199,13 +270,13 @@ public class HomeActivity extends AppCompatActivity {
         customButtonListener.setListener(new CustomButtonListener.CustomEventListener() {
             @Override
             public void onEvent() {
-                if(animStatus) {
+                if (animStatus) {
                     switchDirectionCamera.setClickable(false);
                     imageButtonPower.setClickable(false);
                     materialCardViewButtonRecord.setClickable(false);
                     switchModeCamera.setClickable(false);
                     materialCardViewButtonVideo.setClickable(false);
-                }else {
+                } else {
                     switchDirectionCamera.setClickable(true);
                     imageButtonPower.setClickable(true);
                     materialCardViewButtonRecord.setClickable(true);
@@ -424,57 +495,50 @@ public class HomeActivity extends AppCompatActivity {
             CustomAnimationUtil.imageViewAnim01(getApplication(), materialCardViewCoverCamera);
         }, 1000);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
+
         // get the location and store the image
-        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null) {
-                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-                try {
-                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                    if (!addresses.isEmpty()) {
+        if (currentLocation != null) {
+            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+            try {
+                List<Address> addresses = geocoder.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
+                if (!addresses.isEmpty()) {
 
-                        Address address = addresses.get(0);
-                        // 创建文件名，以时间戳和地点命名
-                        String cityName = address.getLocality();
-                        // 详细地址
-                        String detailedAddress = address.getAddressLine(0);
-                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-                        String fileName = "IMAGE_Time_" + timeStamp + "_City_" + cityName + "_Location_" + detailedAddress;
+                    Address address = addresses.get(0);
+                    // 创建文件名，以时间戳和地点命名
+                    String cityName = address.getLocality();
+                    // 详细地址
+                    String detailedAddress = address.getAddressLine(0);
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+                    String fileName = "IMAGE_Time_" + timeStamp + "_City_" + cityName + "_Location_" + detailedAddress;
 
-                        // 改为media存储
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
-                        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
-                        contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/GG-CAM");
+                    // 改为media存储
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+                    contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+                    contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/GG-CAM");
 
-                        // 使用得到的Uri保存图片
-                        ImageCapture.OutputFileOptions options = new ImageCapture.OutputFileOptions.Builder(getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues).build();
-                        imageCapture.takePicture(options, mainExecutor, new ImageCapture.OnImageSavedCallback() {
-                            @Override
-                            public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                                Toast.makeText(getApplicationContext(), "Photo saved", Toast.LENGTH_SHORT).show();
-                            }
+                    // 使用得到的Uri保存图片
+                    ImageCapture.OutputFileOptions options = new ImageCapture.OutputFileOptions.Builder(getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues).build();
+                    imageCapture.takePicture(options, mainExecutor, new ImageCapture.OnImageSavedCallback() {
+                        @Override
+                        public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                            Toast.makeText(getApplicationContext(), "Photo saved", Toast.LENGTH_SHORT).show();
+                        }
 
-                            @Override
-                            public void onError(@NonNull ImageCaptureException exception) {
-                                // 保存失败
-                                Toast.makeText(getApplicationContext(), "Photo error: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                } catch (IOException e) {
-                    // 保存失败
-                    Toast.makeText(getApplicationContext(), "Photo error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        @Override
+                        public void onError(@NonNull ImageCaptureException exception) {
+                            // 保存失败
+                            Toast.makeText(getApplicationContext(), "Photo error: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
-            }else {
-                Toast.makeText(getApplicationContext(), "You should open you google map to get the location firstly", Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                // 保存失败
+                Toast.makeText(getApplicationContext(), "Photo error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        });
+        } else {
+            Toast.makeText(getApplicationContext(), "Can not get the location!", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -502,86 +566,69 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
 
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
+
         // get the location and store the image
-        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null) {
-                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-                try {
-                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                    if (!addresses.isEmpty()) {
-                        Address address = addresses.get(0);
-                        // 创建文件名，以时间戳和地点命名
-                        String cityName = address.getLocality();
-                        // 详细地址
-                        String detailedAddress = address.getAddressLine(0);
-                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-                        String fileName = "Video_Time_" + timeStamp + "_City_" + cityName + "_Location_" + detailedAddress;
+        if (currentLocation != null) {
+            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+            try {
+                List<Address> addresses = geocoder.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
+                if (!addresses.isEmpty()) {
+                    Address address = addresses.get(0);
+                    // 创建文件名，以时间戳和地点命名
+                    String cityName = address.getLocality();
+                    // 详细地址
+                    String detailedAddress = address.getAddressLine(0);
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+                    String fileName = "Video_Time_" + timeStamp + "_City_" + cityName + "_Location_" + detailedAddress;
 
-                        // 在外部存储的应用专有目录下创建一个images目录
-//                        File videosDir = getExternalFilesDir("videos");
-//                        if (!videosDir.exists()) {
-//                            videosDir.mkdirs();  // 如果目录不存在，则创建它
-//                        }
+                    // 改为通过media存储
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+                    contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
+                    contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/GG-CAM");
 
-                        // 在images目录下创建要保存的图片文件
-//                        photoFile = new File(videosDir, fileName);
-
-                        // 改为通过media存储
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
-                        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
-                        contentValues.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/GG-CAM");
-
-                        // 保存视频带有音频
-                        MediaStoreOutputOptions options = new MediaStoreOutputOptions.Builder(getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
-                                .setContentValues(contentValues).build();
+                    // 保存视频带有音频
+                    MediaStoreOutputOptions options = new MediaStoreOutputOptions.Builder(getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+                            .setContentValues(contentValues).build();
 
 
-                        // 根据当前的设置和配置，为即将进行的视频录制准备必要的资源。
-                        recording = videoCapture.getOutput().prepareRecording(HomeActivity.this, options)
-                                .withAudioEnabled() // 确保录制的视频中带有音频。
-                                .start(mainExecutor, videoRecordEvent -> {
-                                    if (videoRecordEvent instanceof VideoRecordEvent.Start) {
-                                        // 当视频开始录制时，此代码块将被执行。
-                                        // forbid all buttons and change button style
-                                        closeButtonsWhenVideoRecord();
-                                        Toast.makeText(this, "Start to record", Toast.LENGTH_SHORT).show();
+                    // 根据当前的设置和配置，为即将进行的视频录制准备必要的资源。
+                    recording = videoCapture.getOutput().prepareRecording(HomeActivity.this, options)
+                            .withAudioEnabled() // 确保录制的视频中带有音频。
+                            .start(mainExecutor, videoRecordEvent -> {
+                                if (videoRecordEvent instanceof VideoRecordEvent.Start) {
+                                    // 当视频开始录制时，此代码块将被执行。
+                                    // forbid all buttons and change button style
+                                    closeButtonsWhenVideoRecord();
+                                    Toast.makeText(this, "Start to record", Toast.LENGTH_SHORT).show();
 
-                                    } else if (videoRecordEvent instanceof VideoRecordEvent.Finalize) {
-                                        if (!((VideoRecordEvent.Finalize) videoRecordEvent).hasError()) {
-                                            // 当视频录制结束并完成保存时，此代码块将被执行。
-                                            // recover all buttons and change button style
-                                            openButtonsWhenVideoRecord();
-                                            Toast.makeText(this, "Video saved", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            // 如果在录制视频期间出现错误，我们将关闭录制，并显示一个错误消息。
-                                            openButtonsWhenVideoRecord();
-                                            recording.close();
-                                            recording = null;
-                                            String msg = "Error: " + ((VideoRecordEvent.Finalize) videoRecordEvent).getError();
-                                            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-                                        }
+                                } else if (videoRecordEvent instanceof VideoRecordEvent.Finalize) {
+                                    if (!((VideoRecordEvent.Finalize) videoRecordEvent).hasError()) {
+                                        // 当视频录制结束并完成保存时，此代码块将被执行。
+                                        // recover all buttons and change button style
+                                        openButtonsWhenVideoRecord();
+                                        Toast.makeText(this, "Video saved", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        // 如果在录制视频期间出现错误，我们将关闭录制，并显示一个错误消息。
+                                        openButtonsWhenVideoRecord();
+                                        recording.close();
+                                        recording = null;
+                                        String msg = "Error: " + ((VideoRecordEvent.Finalize) videoRecordEvent).getError();
+                                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
                                     }
-                                });
-                    }
-                } catch (IOException e) {
-                    // 保存失败
-                    Toast.makeText(getApplicationContext(), "Video error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
                 }
-            }else {
-                Toast.makeText(getApplicationContext(), "You should open you google map to get the location firstly", Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                // 保存失败
+                Toast.makeText(getApplicationContext(), "Video error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        });
+        } else {
+            Toast.makeText(getApplicationContext(), "Can not get the location!", Toast.LENGTH_SHORT).show();
+        }
 
 
     }
@@ -683,4 +730,9 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        fusedLocationClient.removeLocationUpdates(locationCallback);
+    }
 }

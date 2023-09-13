@@ -1,4 +1,4 @@
-package com.jiale.gg_cam;
+package com.jiale.gg_cam.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.widget.ImageButton;
 
+import com.jiale.gg_cam.R;
 import com.jiale.gg_cam.adapters.ImagesListAdapter;
 import com.jiale.gg_cam.entities.CamItem;
 
@@ -42,8 +43,6 @@ public class ImagesActivity extends AppCompatActivity {
 
     // recycle view for items show
     private RecyclerView recyclerViewList;
-    // 声明权限请求码，你可以自定义
-    private static final int REQUEST_READ_EXTERNAL_STORAGE = 10111;
 
     // time format
     @SuppressLint("SimpleDateFormat")

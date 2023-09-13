@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ImageFragment">
+    tools:context=".activities.ImageFragment">
 
     <ImageButton
         android:id="@+id/image_fragment_image_button_back"
@@ -44,10 +44,13 @@
             android:contentDescription="@string/app_name"
             android:visibility="gone"/>
 
-        <com.google.android.exoplayer2.ui.PlayerView
-            android:background="@android:color/white"
+        <androidx.media3.ui.PlayerView
             android:id="@+id/image_fragment_video_view_pic"
+            app:show_buffering="when_playing"
+            app:show_shuffle_button="true"
+            app:auto_show="false"
             app:resize_mode="zoom"
+            app:surface_type="texture_view"
             android:layout_marginTop="35dp"
             android:layout_gravity="center_horizontal"
             android:layout_width="260dp"

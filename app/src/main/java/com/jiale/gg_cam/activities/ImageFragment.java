@@ -1,13 +1,16 @@
-package com.jiale.gg_cam;
+package com.jiale.gg_cam.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import com.google.android.exoplayer2.MediaItem;
 
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
+import androidx.media3.common.MediaItem;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.ui.PlayerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.ui.PlayerView;
+import com.jiale.gg_cam.R;
 import com.jiale.gg_cam.entities.CamItem;
 
 /**
@@ -59,6 +61,12 @@ public class ImageFragment extends DialogFragment {
     // main page
     private RelativeLayout relativeLayoutMain;
 
+    // 初始化播放器
+    private ExoPlayer player;
+
+    // 关闭时的视图
+    ImageView imageViewClosePicture;
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -93,6 +101,7 @@ public class ImageFragment extends DialogFragment {
 
     /**
      * init views
+     *
      * @param view views
      */
     @SuppressLint("SetTextI18n")
@@ -107,15 +116,14 @@ public class ImageFragment extends DialogFragment {
         imageViewPic = view.findViewById(R.id.image_fragment_image_view_pic);
         videoViewPic = view.findViewById(R.id.image_fragment_video_view_pic);
         initImage();
-        relativeLayoutMain= view.findViewById(R.id.image_fragment_relative_layout_main);
-
+        relativeLayoutMain = view.findViewById(R.id.image_fragment_relative_layout_main);
     }
 
     /**
      * init image or videos
      */
     private void initImage() {
-        if(mediaItemSelf.getType() == CamItem.MediaType.IMAGE){
+        if (mediaItemSelf.getType() == CamItem.MediaType.IMAGE) {
             imageViewPic.setVisibility(View.VISIBLE);
             videoViewPic.setVisibility(View.GONE);
             // 图片
@@ -124,11 +132,14 @@ public class ImageFragment extends DialogFragment {
                     .centerCrop()
                     .error(R.drawable.ic_logo)
                     .into(imageViewPic);
-        }else {
+        } else {
             imageViewPic.setVisibility(View.GONE);
             videoViewPic.setVisibility(View.VISIBLE);
+
             // 初始化播放器
-            SimpleExoPlayer player = new SimpleExoPlayer.Builder(getActivity()).build();
+            player = new ExoPlayer.Builder(getActivity()).build();
+
+
             videoViewPic.setPlayer(player);
 
             // 准备本地视频的播放源
@@ -137,13 +148,13 @@ public class ImageFragment extends DialogFragment {
 
             // 准备并开始播放
             player.prepare();
-            player.setPlayWhenReady(true);
+
 
         }
     }
 
     /**
-     *  set Listener
+     * set Listener
      */
     private void setListener() {
         // imageButtonBack Listener
@@ -159,8 +170,19 @@ public class ImageFragment extends DialogFragment {
         });
     }
 
-    public void setMediaItem(CamItem mediaItem01){
+    public void setMediaItem(CamItem mediaItem01) {
         this.mediaItemSelf = mediaItem01;
     }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        if (player != null) {
+            videoViewPic.setPlayer(null);  // Disconnect PlayerView from the player
+            player.release();              // 释放播放器资源
+            player = null;                 // 将播放器对象设置为null
+        }
+        super.onDismiss(dialog);
+    }
+
 
 }
