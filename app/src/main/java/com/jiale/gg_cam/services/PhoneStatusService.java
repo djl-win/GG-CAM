@@ -33,6 +33,36 @@ public class PhoneStatusService extends Service {
 
     // Flag to track if the device is connected to WiFi
     private boolean isConnectedToWifi = false;
+    // Flag to track if the device is connected to cellar
+    private boolean isConnectedToCellar = false;
+
+    // network manager
+    private ConnectivityManager cm;
+
+    // network call back
+    private final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
+
+        @Override
+        public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities networkCapabilities) {
+            if (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                isConnectedToWifi = true;
+            } else if (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                isConnectedToCellar = true;
+            }
+            decideUploadAction();
+        }
+
+        @Override
+        public void onLost(@NonNull Network network) {
+            NetworkCapabilities lostNetworkCapabilities = cm.getNetworkCapabilities(network);
+            if (lostNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                isConnectedToWifi = false;
+            } else if (lostNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                isConnectedToCellar = false;
+            }
+            decideUploadAction();
+        }
+    };
 
 
     // BroadcastReceiver to handle various device status changes
@@ -55,43 +85,6 @@ public class PhoneStatusService extends Service {
         }
     };
 
-    // NetworkCallback to handle network status changes
-    private final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
-        // Called when a network becomes available
-        @Override
-        public void onAvailable(@NonNull Network network) {
-            super.onAvailable(network);
-            updateWifiStatusAndDecideAction();
-        }
-
-        // Called when a network is lost
-        @Override
-        public void onLost(@NonNull Network network) {
-            super.onLost(network);
-            isConnectedToWifi = false; // Assuming that when a network is lost, WiFi is not connected. This might not always be the case, so consider using another method to check.
-            decideUploadAction();
-        }
-
-        // Called when the capabilities of a network change
-        @Override
-        public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities networkCapabilities) {
-            super.onCapabilitiesChanged(network, networkCapabilities);
-            boolean wasConnectedToWifi = isConnectedToWifi;
-            isConnectedToWifi = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
-            if (wasConnectedToWifi != isConnectedToWifi) { // Only decide upload action if WiFi status has really changed.
-                decideUploadAction();
-            }
-        }
-    };
-
-    private void updateWifiStatusAndDecideAction() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm != null) {
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            isConnectedToWifi = activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-            decideUploadAction();
-        }
-    }
 
     // Called when the service is first created
     @Override
@@ -107,20 +100,21 @@ public class PhoneStatusService extends Service {
         registerReceiver(statusReceiver, filter);
 
         // Registering the NetworkCallback to listen for network status changes
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkRequest.Builder builder = new NetworkRequest.Builder();
         builder.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
         cm.registerNetworkCallback(builder.build(), networkCallback);
 
-        // If the device OS version is Oreo or above, decide the initial upload action
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            decideUploadAction();
-        }
     }
 
     // Decide whether to start or stop the upload based on various conditions
     private void decideUploadAction() {
+
         // 0. 非网络状态，禁止上传
+        if(!isConnectedToWifi && !isConnectedToCellar){
+            stopUpload("没有网络，禁止上传");
+            return;
+        }
 
 
         // 1. Check if the device is in Doze mode
@@ -147,7 +141,7 @@ public class PhoneStatusService extends Service {
         // 3. Check the device's battery level
         int batteryLevel = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
         if (batteryLevel <= 50) {
-            stopUpload("未充电，电量低于50，取消上传");
+            startUpload("未充电，电量低于50，取消上传");
             return;
         } else if (batteryLevel >= 80) {
             startUpload("未充电，电量大于80，开始上传");
@@ -158,7 +152,7 @@ public class PhoneStatusService extends Service {
         if (isConnectedToWifi) {
             startUpload("50-80电量，WIFI状态，开始上传");
         } else {
-            stopUpload("50-80电量，非WIFI状态，取消上传");
+            startUpload("50-80电量，非WIFI状态，取消上传");
         }
     }
 
@@ -181,7 +175,6 @@ public class PhoneStatusService extends Service {
         // Unregister the BroadcastReceiver
         unregisterReceiver(statusReceiver);
         // Unregister the NetworkCallback
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         cm.unregisterNetworkCallback(networkCallback);
     }
 
