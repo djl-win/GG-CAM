@@ -39,9 +39,10 @@ dependencies {
 
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:32.2.3')
-
-    // When using the BoM, don't specify versions in Firebase dependencies
+    // Add the dependency for the Cloud analytics library
     implementation 'com.google.firebase:firebase-analytics'
+    // Add the dependency for the Cloud Storage library
+    implementation("com.google.firebase:firebase-storage")
 
     // avatar library
     implementation 'com.github.bumptech.glide:glide:4.16.0'

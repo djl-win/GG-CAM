@@ -15,9 +15,12 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.jiale.gg_cam.utils.CustomUploadUtil;
 
 /**
  * phoneStatusService
@@ -112,7 +115,8 @@ public class PhoneStatusService extends Service {
 
         // 0. 非网络状态，禁止上传
         if(!isConnectedToWifi && !isConnectedToCellar){
-            stopUpload("没有网络，禁止上传");
+            showMessage("没有网络，取消上传");
+            CustomUploadUtil.stopUploadFiles();
             return;
         }
 
@@ -120,7 +124,8 @@ public class PhoneStatusService extends Service {
         // 1. Check if the device is in Doze mode
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         if (pm != null && pm.isDeviceIdleMode()) {
-            stopUpload("doze状态，取消上传");
+            showMessage("doze状态，取消上传");
+            CustomUploadUtil.stopUploadFiles();
             return;
         }
 
@@ -134,39 +139,39 @@ public class PhoneStatusService extends Service {
                 status == BatteryManager.BATTERY_STATUS_FULL;
 
         if (isCharging) {
-            startUpload("充电中，开始上传");
+            showMessage("充电中，开始上传");
+            CustomUploadUtil.startUploadFiles(getContentResolver(),getApplicationContext());
             return;
         }
 
         // 3. Check the device's battery level
         int batteryLevel = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
         if (batteryLevel <= 50) {
-            startUpload("未充电，电量低于50，取消上传");
+            showMessage("未充电，电量低于50，取消上传");
+            CustomUploadUtil.stopUploadFiles();
             return;
         } else if (batteryLevel >= 80) {
-            startUpload("未充电，电量大于80，开始上传");
+            showMessage("未充电，电量大于80，开始上传");
+            CustomUploadUtil.startUploadFiles(getContentResolver(),getApplicationContext());
             return;
         }
 
         // 4. Check the network status
         if (isConnectedToWifi) {
-            startUpload("50-80电量，WIFI状态，开始上传");
+            showMessage("50-80电量，WIFI状态，开始上传");
+            CustomUploadUtil.startUploadFiles(getContentResolver(),getApplicationContext());
         } else {
-            startUpload("50-80电量，非WIFI状态，取消上传");
+            showMessage("50-80电量，非WIFI状态，取消上传");
+            CustomUploadUtil.stopUploadFiles();
         }
     }
 
     // Method to start the upload process
-    private void startUpload(String message) {
+    private void showMessage(String message) {
         // Actual upload logic would go here
-        Log.d("GG-DEBUG", message);
+       Log.d("GG-DEBUG", message);
     }
 
-    // Method to stop the upload process
-    private void stopUpload(String message) {
-        // Logic to stop the upload would go here
-        Log.d("GG-DEBUG", message);
-    }
 
     // Called when the service is being destroyed
     @Override
