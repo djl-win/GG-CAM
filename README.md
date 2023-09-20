@@ -8,7 +8,6 @@ A camera Application that allows you to take photos or videos and view the photo
 - [Technologies/技术栈](#technologies/技术栈)
 - [Introduction/介绍](#introduction/介绍)
 - [Screenshot/屏幕截图](#screenshot/屏幕截图)
-- [License/证书](#license/证书)
 
 ## Configuration/配置
 - JDK 1.8 
@@ -40,8 +39,14 @@ A camera Application that allows you to take photos or videos and view the photo
 6. Check the results. Once the app is installed on the device, it will start automatically.
 
 ## Screenshot/屏幕截图
+![WeChat Screenshot_20230920200057](https://media.github.sydney.edu.au/user/16236/files/6584e158-f769-4b18-ad83-cc9e80905f3a)
+![2eea2b1ce5c28a6e4c928fa0f07d799](https://media.github.sydney.edu.au/user/16236/files/05787733-7fa4-476f-91f4-bf8b9f7904cd)
+![WeChat Screenshot_20230920200124](https://media.github.sydney.edu.au/user/16236/files/b1a8550b-0d88-4b6d-ad27-3c0211976e9c)
+![WeChat Screenshot_20230920200200](https://media.github.sydney.edu.au/user/16236/files/481cbf1a-9bfd-4b6b-a2d3-c9e1a36974cf)
+![WeChat Screenshot_20230920200209](https://media.github.sydney.edu.au/user/16236/files/dd48de81-694e-4e35-9af9-3cfd3c629c4b)
+![WeChat Screenshot_20230920200225](https://media.github.sydney.edu.au/user/16236/files/686b0c57-7cb7-4dde-a35e-5d3417e1543c)
+![WeChat Screenshot_20230920200235](https://media.github.sydney.edu.au/user/16236/files/711d8cac-de81-4990-9012-6b939bb775ac)
+![aaaaaaa](https://media.github.sydney.edu.au/user/16236/files/ec0ffda5-5d3f-4ca2-ba65-4604024d24ba)
 
 
-## License/证书
 
-This project is licensed under the GNU GPLv3 License - see the [LICENSE.md](https://github.com/djl-win/To-do-list/blob/master/LICENSE) file for details.
