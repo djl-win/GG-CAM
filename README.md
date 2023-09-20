@@ -51,4 +51,4 @@ A camera Application that allows you to take photos or videos and view the photo
 
 ## License/证书
 
-This project is licensed under the GNU GPLv3 License - see the [LICENSE.md](https://github.com/djl-win/To-do-list/blob/master/LICENSE) file for details.
+This project is licensed under the GNU GPLv3 License - see the [LICENSE.md](https://github.com/djl-win/GG-CAM/blob/master/LICENSE) file for details.
