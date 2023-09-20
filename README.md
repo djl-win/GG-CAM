@@ -8,6 +8,7 @@ A camera Application that allows you to take photos or videos and view the photo
 - [Technologies/技术栈](#technologies/技术栈)
 - [Introduction/介绍](#introduction/介绍)
 - [Screenshot/屏幕截图](#screenshot/屏幕截图)
+- [License/证书](#license/证书)
 
 ## Configuration/配置
 - JDK 1.8 
@@ -48,5 +49,6 @@ A camera Application that allows you to take photos or videos and view the photo
 ![WeChat Screenshot_20230920200235](https://media.github.sydney.edu.au/user/16236/files/711d8cac-de81-4990-9012-6b939bb775ac)
 ![aaaaaaa](https://media.github.sydney.edu.au/user/16236/files/ec0ffda5-5d3f-4ca2-ba65-4604024d24ba)
 
+## License/证书
 
-
+This project is licensed under the GNU GPLv3 License - see the [LICENSE.md](https://github.com/djl-win/To-do-list/blob/master/LICENSE) file for details.
